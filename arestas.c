@@ -146,12 +146,11 @@ void destinos(vertice *grafo, char partida[]){
 void BFS(fila *f){
 	vertice *atual;
 	int conexoes, tam;
-	char *caminhos = reallocarray(caminhos,4,1);
+	char *caminhos /*= reallocarray(caminhos,4,1)*/ = (char*)malloc(f->ini->conexoes*7+4);
 	atual = removef(f,&conexoes,&caminhos,&tam);
 	
 	if(conexoes != 0){
 		caminhos = reallocarray(caminhos,tam,1);
-			//exit(0);
 		caminhos[tam-8] = ' ';
 		caminhos[tam-7] = '-';
 		caminhos[tam-6] = '>';
@@ -170,6 +169,7 @@ void BFS(fila *f){
 			inseref(f, voo->vertice,conexoes,caminhos);			
 		}
 	}
+	//printfila(f);
 	//caminhos = reallocarray(caminhos,0,1);
 	free(caminhos);
 }
@@ -185,6 +185,7 @@ void conexoes(vertice *grafo, char partida[]){
 		}
 		else
 			aux->visitado = false;
+		//printf("\n\t%s : %s\n",aux->aero,aux->visitado ? "true" : "false");
 	}
 	inseref(f,atual,0,partida);
 	while(!vaziaf(f))
@@ -289,6 +290,12 @@ vertice* removef(fila *f, int *conexoes, char **caminhos, int *tam){
 	else{
 		return NULL;
 	}
+}
+
+void printfila(fila *f){
+	no *aux;
+	for(aux = f->fim; aux != NULL; aux = aux->prox)
+		printf("\n\t%s %s %d\n",aux->aeroporto->aero,aux->caminhos,aux->conexoes);
 }
 
 void desalocaf(fila *f){

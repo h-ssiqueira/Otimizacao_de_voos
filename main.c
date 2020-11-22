@@ -62,7 +62,7 @@ int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando
 
 	printf("=== Menores custos ===\n");
 	// Mostra os preços (Dijkstra)
-
+	//printateste(grafo); // Verificação de criação do grafo
     desalocag(&grafo); // Liberação de memória do grafo
     return 0;
 }

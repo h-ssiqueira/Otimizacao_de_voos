@@ -79,4 +79,6 @@ void inseref(fila *f, vertice *aero, int conection, char path[]);
 
 vertice* removef(fila *f, int *conexoes, char **caminhos, int *tam);
 
+void printfila(fila *f);
+
 void desalocaf(fila *f);
