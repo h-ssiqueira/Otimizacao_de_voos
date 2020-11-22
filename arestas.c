@@ -146,12 +146,11 @@ void destinos(vertice *grafo, char partida[]){
 void BFS(fila *f){
 	vertice *atual;
 	int conexoes, tam;
-	char *caminhos = (char*)malloc(3*sizeof(char));
+	char *caminhos = reallocarray(caminhos,4,1);
 	atual = removef(f,&conexoes,&caminhos,&tam);
 	
-	//tam = strlen(caminhos); // Adicionar a seta e o próximo aeroporto da conexão
 	if(conexoes != 0){
-		if(!realloc(caminhos,tam*sizeof(char)));
+		caminhos = reallocarray(caminhos,tam,1);
 			//exit(0);
 		caminhos[tam-8] = ' ';
 		caminhos[tam-7] = '-';
@@ -171,8 +170,8 @@ void BFS(fila *f){
 			inseref(f, voo->vertice,conexoes,caminhos);			
 		}
 	}
-	if(!realloc(caminhos,0))
-		exit(0);
+	//caminhos = reallocarray(caminhos,0,1);
+	free(caminhos);
 }
 
 // BFS
@@ -271,6 +270,7 @@ vertice* removef(fila *f, int *conexoes, char **caminhos, int *tam){
 		(*tam) = strlen(f->ini->caminhos)+8;
 		strcpy((*caminhos),f->ini->caminhos);
 		if(f->ini == f->fim){
+			f->ini->aeroporto = NULL;
 			free(f->ini->caminhos);
 			free(f->ini);
 			f->fim = f->ini = NULL;
@@ -279,6 +279,7 @@ vertice* removef(fila *f, int *conexoes, char **caminhos, int *tam){
 			for(aux = f->fim; aux->prox != f->ini; aux = aux->prox)
 				continue;
 			aux->prox = NULL;
+			f->ini->aeroporto = NULL;
 			free(f->ini->caminhos);
 			free(f->ini);
 			f->ini = aux;
@@ -296,6 +297,7 @@ void desalocaf(fila *f){
 		aux2 = aux->prox;
 		if(aux->caminhos)
 			free(aux->caminhos);
+		aux->aeroporto = NULL;
 		free(aux);
 		aux = aux2;
 	}
