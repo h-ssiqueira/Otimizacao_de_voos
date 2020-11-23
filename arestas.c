@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 #include "arestas.h"
 
 vertice* novov(){
@@ -145,10 +146,12 @@ void destinos(vertice *grafo, char partida[]){
 
 void BFS(fila *f){
 	vertice *atual;
-	int conexoes, tam;
-	char *caminhos /*= reallocarray(caminhos,4,1)*/ = (char*)malloc(f->ini->conexoes*7+4);
-	atual = removef(f,&conexoes,&caminhos,&tam);
-	
+	int conexoes/*, tam*/;
+	float total;
+	//char *caminhos /*= reallocarray(caminhos,4,1)*/ = (char*)malloc(f->ini->conexoes*7+4);
+	atual = removef(f,&conexoes/*,&caminhos,&tam*/);
+
+	/*
 	if(conexoes != 0){
 		caminhos = reallocarray(caminhos,tam,1);
 		caminhos[tam-8] = ' ';
@@ -161,33 +164,44 @@ void BFS(fila *f){
 		caminhos[tam-1] = '\0';
 		printf("%s (%d): %s\n",atual->aero, conexoes, caminhos);
 	}
-
+	*/
 	conexoes++;
-	for(aresta *voo = atual->arestas; voo != NULL; voo = voo->prox){
-		if(!voo->vertice->visitado){
+	for(aresta *voo = atual->arestas; voo != NULL; voo = voo->prox){ // Checa as arestas adjacentes
+		total = atual->total + voo->preco; // Calcula o preço para o destino
+		if(total < voo->vertice->total){ // Se o preço for menor atualiza todas as informações para caminho mais curto
+			voo->vertice->total = total;
+			voo->vertice->conexoes = conexoes;
+			voo->vertice->anterior = atual;
+		}
+		if(!voo->vertice->visitado){ // Checa se já foi visitado para adicionar na fila
 			voo->vertice->visitado = true;
-			inseref(f, voo->vertice,conexoes,caminhos);			
+			inseref(f, voo->vertice,conexoes/*,caminhos*/);
 		}
 	}
 	//printfila(f);
 	//caminhos = reallocarray(caminhos,0,1);
-	free(caminhos);
+	//free(caminhos);
 }
 
 // BFS
 void conexoes(vertice *grafo, char partida[]){
 	vertice *atual;
 	fila *f = criaf();
-	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){ // Inicializa o booleano para visitação
+	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){
+		aux->anterior = NULL; // Inicializa o último visitado para o algoritmo de caminho mais curto
+		aux->conexoes = 0;
 		if(strcmp(aux->aero,partida) == 0){
-			aux->visitado = true;
-			atual = aux;
+			aux->visitado = true; // Deixa atualizado o aeroporto de início
+			aux->total = 0; // Deixa o valor total como 0
+			atual = aux; // Atribui o atual para chamar posteriormente na função
 		}
-		else
-			aux->visitado = false;
-		//printf("\n\t%s : %s\n",aux->aero,aux->visitado ? "true" : "false");
+		else{
+			aux->visitado = false; // Inicializa o booleano para visitação
+			aux->total = FLT_MAX; // Atribui o "infinito" sendo o limite do tipo float
+		}
+		//printf("\n\t%s : %s\n",aux->aero,aux->visitado ? "true" : "false"); // Conferência de atribuição do booleano
 	}
-	inseref(f,atual,0,partida);
+	inseref(f,atual,0/*,partida*/);
 	while(!vaziaf(f))
 		BFS(f);
 	desalocaf(f);
@@ -246,12 +260,12 @@ bool vaziaf(fila *f){
 	return false;
 }
 
-void inseref(fila *f, vertice *aero, int conection, char path[]){
+void inseref(fila *f, vertice *aero, int conection/*, char path[]*/){
 	no *novo = (no*)malloc(sizeof(no));
 	novo->aeroporto = aero;
 	novo->conexoes = conection;
-	novo->caminhos = (char*)malloc(strlen(path)*(sizeof(char)));
-	strcpy(novo->caminhos,path);
+	//novo->caminhos = (char*)malloc(strlen(path)*(sizeof(char))); // inicialmente usada no BFS
+	//strcpy(novo->caminhos,path);
 	if(!f->ini){
 		f->ini = novo;
 		f->fim = novo;
@@ -263,16 +277,16 @@ void inseref(fila *f, vertice *aero, int conection, char path[]){
 	}
 }
 
-vertice* removef(fila *f, int *conexoes, char **caminhos, int *tam){
+vertice* removef(fila *f, int *conexoes/*, char **caminhos, int *tam*/){
 	if(f->ini){
 		no *aux;
 		vertice *retorno = f->ini->aeroporto;
 		(*conexoes) = f->ini->conexoes;
-		(*tam) = strlen(f->ini->caminhos)+8;
-		strcpy((*caminhos),f->ini->caminhos);
+		//(*tam) = strlen(f->ini->caminhos)+8;
+		//strcpy((*caminhos),f->ini->caminhos);
 		if(f->ini == f->fim){
 			f->ini->aeroporto = NULL;
-			free(f->ini->caminhos);
+			//free(f->ini->caminhos); // inicialmente usada no BFS
 			free(f->ini);
 			f->fim = f->ini = NULL;
 		}
@@ -281,7 +295,7 @@ vertice* removef(fila *f, int *conexoes, char **caminhos, int *tam){
 				continue;
 			aux->prox = NULL;
 			f->ini->aeroporto = NULL;
-			free(f->ini->caminhos);
+			//free(f->ini->caminhos); // inicialmente usada no BFS
 			free(f->ini);
 			f->ini = aux;
 		}
@@ -295,15 +309,16 @@ vertice* removef(fila *f, int *conexoes, char **caminhos, int *tam){
 void printfila(fila *f){
 	no *aux;
 	for(aux = f->fim; aux != NULL; aux = aux->prox)
-		printf("\n\t%s %s %d\n",aux->aeroporto->aero,aux->caminhos,aux->conexoes);
+		//printf("\n\t%s %s %d\n",aux->aeroporto->aero,aux->caminhos,aux->conexoes); // inicialmente usada no BFS
+		printf("\n\t%s %d\n",aux->aeroporto->aero,aux->conexoes);
 }
 
 void desalocaf(fila *f){
 	no *aux, *aux2;
 	for(aux = f->fim; aux != NULL;){
 		aux2 = aux->prox;
-		if(aux->caminhos)
-			free(aux->caminhos);
+		//if(aux->caminhos)
+			//free(aux->caminhos); // inicialmente usada no BFS
 		aux->aeroporto = NULL;
 		free(aux);
 		aux = aux2;
