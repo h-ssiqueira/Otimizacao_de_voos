@@ -70,6 +70,12 @@ void DFS(vertice *atual/*, pilha *caminho*/);
 // Inicializa as variáveis booleanas para executar a busca em profundidade
 void destinos(vertice *grafo, char partida[]);
 
+//Função para impressão  
+void printa_rec_conex(vertice *aux, vertice *destino, char *origem, bool custo);
+
+//Função para impressão 
+void printconex(vertice *grafo, char *origem, bool custo);
+
 // Função de busca em largura + cálculo do caminho mais barato
 void BFS(fila *f);
 

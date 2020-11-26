@@ -57,12 +57,13 @@ int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando
 	printf("=== Destinos ===\n");
 	destinos(grafo, argv[2]);// Mostra os destinos disponíveis (DFS)
 
-	printf("\n=== Conexões ===\n");
+	printf("\n=== Conexões ===");
 	conexoes(grafo, argv[2]);// Mostra as conexões e calcula os menores preços (BFS + Dijstra)
-
-	printf("=== Menores custos ===\n");
-
+    printconex(grafo, argv[2], false);
+	printf("\n=== Menores custos ===");
+    printconex(grafo, argv[2], true);
 	//printateste(grafo); // Verificação de criação do grafo
+    printf("\n");
     desalocag(&grafo); // Liberação de memória do grafo
     return 0;
 }

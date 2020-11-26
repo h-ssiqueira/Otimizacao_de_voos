@@ -96,6 +96,7 @@ void desalocag(vertice **Grafo){
             free(auxa);
             auxa = proxa;
         }
+		auxv->anterior = NULL;
         auxv->arestas = NULL;
         proxv = auxv->prox;
         free(auxv);
@@ -142,6 +143,45 @@ void destinos(vertice *grafo, char partida[]){
 	for(aresta *aux = atual->arestas; aux != NULL; aux = aux->prox)
 		DFS(aux->vertice/*,caminho*/);
 	//desalocap(caminho);
+}
+
+//Funções Impressão 
+void printa_rec_conex(vertice *aux, vertice *destino, char *origem, bool custo){
+	if(!strcmp(aux->aero, origem) && !custo){
+		printf("%s", aux->aero);
+		return;
+	}
+	if(!strcmp(aux->aero, origem) && custo){
+		printf("%s -> %s (R$%.2f) ", aux->aero, destino->aero, destino->total);
+		return;
+	}
+	printa_rec_conex(aux->anterior, aux, origem, custo);
+	if(custo && destino != NULL)
+		printf("%s -> %s (R$%.2f) ", aux->aero, destino->aero, destino->total);
+	else if(!custo)
+		printf(" -> %s", aux->aero);
+}
+
+void printconex(vertice *grafo, char *origem, bool custo){
+	int maiorconex = 0, i;//Pega a maior conexão(Contador)
+	vertice *aux = NULL;
+	for(aux = grafo; aux != NULL; aux = aux->prox){
+		if(maiorconex < aux->conexoes){
+			maiorconex = aux->conexoes; 
+		}
+	}
+	for(i = 1; i <= maiorconex; i++){
+		for(aux = grafo; aux != NULL; aux = aux->prox){
+			if(aux->conexoes == i && !custo){
+				printf("\n%s (%d): ", aux->aero, aux->conexoes);
+				printa_rec_conex(aux, NULL, origem, custo);
+			}
+			else if(aux->conexoes == i && custo){
+				printf("\n%s (R$%.2f): ", aux->aero, aux->total);
+				printa_rec_conex(aux, NULL, origem, custo);
+			}
+		}
+	}
 }
 
 void BFS(fila *f){
