@@ -15,55 +15,42 @@ int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando
 		2 - aeroporto de partida
 	*/
 
-    if(argc != 3){ //Verificação dos parâmetros de entrada
-		printf("\n\tPadrão incorreto de parâmetros!");
+    if(argc != 3){ // Verificação dos parâmetros de entrada
+		printf("\tPadrão incorreto de parâmetros!\n");
         exit(0);
 	}
 
 	/*
-	//Teste para os argumentos
+	// Teste para os argumentos
     printf("\nArgumentos: %d", argc);
 	for(int i = argc-1; i >= 0; i--)
 		printf("\n%s",argv[i]);
 	*/
 
-    FILE *arq = fopen(argv[1], "r");
+    
 	vertice *grafo = novov();
-    int num_aerop, num_voos, check;
-    char origem[4], destino[4], anterior[4] = "RAFA";
-    float preco, cent;
 
-	if(!arq){
-        printf("\n\tErro ao abrir o arquivo.");
-        exit(0);
-    }
-    fscanf(arq, "%d\n", &num_aerop);
-    fscanf(arq, "%d\n", &num_voos);
-    //printf("Num. Aeroportos: %d\nNum. Voos: %d", num_aerop, num_voos);
-    for(int i = num_voos; i > 0 ; i--){// Cria primeiro todos os aeroportos
-        fscanf(arq, "%s %s R$%f,%f", origem, destino, &preco, &cent);
-        check = strcmp(anterior, origem); // Verifica se há um novo aeroporto
-        if(check != 0){
-		    cria_vertice(&grafo,origem);
-            strcpy(anterior, origem);
-        }
-       //printf("\n\n\t(%d)Origem: %s\n\t(%d)Destino:%s\n\tValor:%.2f", strlen(origem),origem, strlen(destino),destino, preco+cent/100);
-    }
-    fclose(arq);
+	cria_aeroportos(&grafo,argv[1]);
 
     cria_arestas(&grafo, argv[1]);//Cria os voos de cada aeroporto
 
-    //printateste(grafo); // Verificação de criação do grafo
-	printf("=== Destinos ===\n");
-	destinos(grafo, argv[2]);// Mostra os destinos disponíveis (DFS)
+	if(verifica(grafo,argv[2])){ // Verifica se o aeroporto de origem existe no grafo
+		//printateste(grafo); // Verificação de criação do grafo
+		printf("=== Destinos ===\n");
+		destinos(grafo, argv[2]);// Mostra os destinos disponíveis (DFS)
 
-	printf("\n=== Conexões ===");
-	conexoes(grafo, argv[2]);// Mostra as conexões e calcula os menores preços (BFS + Dijstra)
-    printconex(grafo, argv[2], false);
-	printf("\n=== Menores custos ===");
-    printconex(grafo, argv[2], true);
-	//printateste(grafo); // Verificação de criação do grafo
-    printf("\n");
+		printf("\n=== Conexões ===");
+		conexoes(grafo, argv[2]); // Calcula os menores preços (BFS + Dijstra)
+		printconex(grafo, argv[2], false); // Mostra as conexões
+
+		printf("\n=== Menores custos ===");
+		printconex(grafo, argv[2], true); // Mostra os menores custos
+		//printateste(grafo); // Verificação de criação do grafo
+		printf("\n");
+	}
+	else
+		printf("\tAeroporto de origem inexistente no arquivo.\n");
+	
     desalocag(&grafo); // Liberação de memória do grafo
     return 0;
 }

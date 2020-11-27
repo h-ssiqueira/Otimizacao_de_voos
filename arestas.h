@@ -50,13 +50,19 @@ vertice *novov();
 aresta *novoa();
 
 // Adiciona um aeroporto ao grafo
-void cria_vertice(vertice **grafo, char aero[]);
+void cria_vertice(vertice ***grafo, char aero[]);
+
+// Adiciona todos os aeroportos
+void cria_aeroportos(vertice **grafo, char nome_arq[]);
 
 // Adiciona um voo
 void adiciona_aresta(vertice *Grafo,aresta **voo, char destino[4], float preco);
 
 // Adiciona todos os voos a partir do arquivo
 void cria_arestas(vertice **Grafo, char nome_arq[]);
+
+// Função que verifica se o aeroporto de destino inserido pelo usuário existe no arquivo texto
+bool verifica(vertice *grafo, char origem[]);
 
 // Libera memória alocada no grafo
 void desalocag(vertice **Grafo);

@@ -17,20 +17,53 @@ aresta* novoa(){
 	return NULL;
 }
 
-void cria_vertice(vertice **grafo, char aero[]){
+void cria_vertice(vertice ***grafo, char aero[]){
 	vertice *aux = (vertice*)malloc(sizeof(vertice)), *roda;
 	strcpy(aux->aero,aero);
 	aux->prox = NULL;
 	aux->visitado = NULL;
 	aux->arestas = novoa();
-    if(!(*grafo)){
-		(*grafo) = aux;
+    if(!(**grafo)){
+		(**grafo) = aux;
 	}
     else{
-	    for(roda = (*grafo); roda->prox != NULL; roda = roda->prox)
+	    for(roda = (**grafo); roda->prox != NULL; roda = roda->prox)
 	    	continue; // Percorre a lista até o fim para adicionar
         roda->prox = aux;
 	    }
+}
+
+void cria_aeroportos(vertice **grafo, char nome_arq[]){
+	int num_aerop, num_voos;
+    char origem[4], destino[4];
+    float preco, cent;
+	bool existeO,existeD;
+	FILE *arq = fopen(nome_arq, "r");
+	vertice *aux;
+	if(!arq){
+        printf("\tErro ao abrir o arquivo.\n");
+        exit(0);
+    }
+    fscanf(arq, "%d\n", &num_aerop);
+    fscanf(arq, "%d\n", &num_voos);
+    //printf("Num. Aeroportos: %d\nNum. Voos: %d", num_aerop, num_voos);
+    for(int i = num_voos; i > 0 ; i--){// Cria primeiro todos os aeroportos
+        fscanf(arq, "%s %s R$%f,%f", origem, destino, &preco, &cent);
+		existeO = false;
+		existeD = false;
+		for(aux = *grafo; aux != NULL; aux = aux->prox){
+			if(!strcmp(aux->aero,origem)) // Verifica se o aeroporto de origem existe
+				existeO = true;
+			if(!strcmp(aux->aero,destino)) // Verifica se o aeroporto de destino existe
+				existeD = true;
+		}
+		if(!existeO)
+        	cria_vertice(&grafo,origem);
+		if(!existeD)
+			cria_vertice(&grafo,destino);
+       //printf("\n\n\t(%d)Origem: %s\n\t(%d)Destino:%s\n\tValor:%.2f", strlen(origem),origem, strlen(destino),destino, preco+cent/100);
+    }
+    fclose(arq);
 }
 
 void adiciona_aresta(vertice *Grafo, aresta **voo, char destino[4], float preco){
@@ -61,14 +94,13 @@ void adiciona_aresta(vertice *Grafo, aresta **voo, char destino[4], float preco)
 }
 
 void cria_arestas(vertice **Grafo, char nome_arq[]){
-	int num_aerop, num_voos, check;
-	char origem[4], destino[4], anterior[4];
+	int num_aerop, num_voos;
+	char origem[4], destino[4];
 	float preco, cent;
-    strcpy(anterior, (*Grafo)->aero);
 	FILE *arq = fopen(nome_arq, "r");
 	vertice *aux = (*Grafo);
 	if(!arq){
-        printf("\n\tErro ao abrir o arquivo.");
+        printf("\tErro ao abrir o arquivo.\n");
         exit(0);
     }
 	fscanf(arq, "%d", &num_aerop);
@@ -76,14 +108,21 @@ void cria_arestas(vertice **Grafo, char nome_arq[]){
     for(int i = num_voos; i > 0 ; i--){// Cria os vôos entre cada aeroporto
         fscanf(arq, "%s %s R$%f,%f", origem, destino, &preco, &cent);
 	    preco += (cent/100);// Unir parte fracionária
-	    check = strcmp(anterior, origem);
-        if(check != 0){ // Atualiza o vértice
-		   aux = aux->prox;
-		   strcpy(anterior,origem);
-        }
+		for(aux = *Grafo; aux != NULL; aux = aux->prox){
+			if(!strcmp(aux->aero,origem))
+				break;
+		}
 	    adiciona_aresta(*Grafo,&(aux)->arestas,destino,preco);   
     }
     fclose(arq);
+}
+
+bool verifica(vertice *grafo, char origem[]){
+	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){
+		if(!strcmp(aux->aero,origem))
+			return true;
+	}
+	return false;
 }
 
 void desalocag(vertice **Grafo){
