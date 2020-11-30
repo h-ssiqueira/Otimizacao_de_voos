@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "arestas.h"
+#include "grafo.h"
 //Biblioteca Fila, Pilha t
 
 int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando 

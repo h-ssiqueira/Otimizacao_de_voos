@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
-#include "arestas.h"
+#include "grafo.h"
 
 vertice* novov(){
 	return NULL;

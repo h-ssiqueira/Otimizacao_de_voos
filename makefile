@@ -1,3 +1,6 @@
+#Alcides Gomes Beato Neto   RA: 19060987             
+#Henrique Sartori Siqueira  RA: 19240472
+#Rafael Silva Barbon        RA: 19243633
 # Compilador
 CC = gcc
 
