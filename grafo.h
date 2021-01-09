@@ -1,4 +1,4 @@
-//Alcides Gomes Beato Neto   RA: 19060987             
+//Alcides Gomes Beato Neto   RA: 19060987
 //Henrique Sartori Siqueira  RA: 19240472
 //Rafael Silva Barbon        RA: 19243633
 
@@ -33,14 +33,14 @@ typedef struct No{
 /*
 // Pilha para DFS (substituida pela recursão)
 typedef struct Pilha{
-    struct No *topo;//Topo pilha 
+    struct No *topo;//Topo pilha
 }pilha;
 */
 
 // Fila para BFS
 typedef struct Fila{
     struct No *ini; // Inicio fila
-    struct No *fim;                         
+    struct No *fim;
 }fila;
 
 // Cria o grafo
@@ -76,10 +76,13 @@ void DFS(vertice *atual/*, pilha *caminho*/);
 // Inicializa as variáveis booleanas para executar a busca em profundidade
 void destinos(vertice *grafo, char partida[]);
 
-//Função para impressão  
+// Função que calcula o total a ser pago para viajar de um aeroporto a outro
+float calculatotal(vertice *atual);
+
+// Função para impressão
 void printa_rec_conex(vertice *aux, vertice *destino, char *origem, bool custo);
 
-//Função para impressão 
+// Função para impressão
 void printconex(vertice *grafo, char *origem, bool custo);
 
 // Função de busca em largura + cálculo do caminho mais barato

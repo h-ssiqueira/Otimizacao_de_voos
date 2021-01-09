@@ -1,4 +1,4 @@
-//Alcides Gomes Beato Neto   RA: 19060987             
+//Alcides Gomes Beato Neto   RA: 19060987
 //Henrique Sartori Siqueira  RA: 19240472
 //Rafael Silva Barbon        RA: 19243633
 
@@ -112,7 +112,7 @@ void cria_arestas(vertice **Grafo, char nome_arq[]){
 			if(!strcmp(aux->aero,origem))
 				break;
 		}
-	    adiciona_aresta(*Grafo,&(aux)->arestas,destino,preco);   
+	    adiciona_aresta(*Grafo,&(aux)->arestas,destino,preco);
     }
     fclose(arq);
 }
@@ -168,7 +168,7 @@ void DFS(vertice *atual/*, pilha *caminho*/){
 }
 
 // DFS
-void destinos(vertice *grafo, char partida[]){ 
+void destinos(vertice *grafo, char partida[]){
 	//pilha *caminho = criap();
 	vertice *atual;
 	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){ // Inicializa o booleano para visitação
@@ -184,7 +184,7 @@ void destinos(vertice *grafo, char partida[]){
 	//desalocap(caminho);
 }
 
-//Funções Impressão 
+//Funções Impressão
 void printa_rec_conex(vertice *aux, vertice *destino, char *origem, bool custo){
 	if(!strcmp(aux->aero, origem) && !custo){
 		printf("%s", aux->aero);
@@ -201,12 +201,17 @@ void printa_rec_conex(vertice *aux, vertice *destino, char *origem, bool custo){
 		printf(" -> %s", aux->aero);
 }
 
+float calculatotal(vertice *atual){
+	if(atual != NULL)
+		return atual->total + calculatotal(atual->anterior);
+}
+
 void printconex(vertice *grafo, char *origem, bool custo){
 	int maiorconex = 0, i;//Pega a maior conexão(Contador)
 	vertice *aux = NULL;
 	for(aux = grafo; aux != NULL; aux = aux->prox){
 		if(maiorconex < aux->conexoes){
-			maiorconex = aux->conexoes; 
+			maiorconex = aux->conexoes;
 		}
 	}
 	for(i = 1; i <= maiorconex; i++){
@@ -216,7 +221,7 @@ void printconex(vertice *grafo, char *origem, bool custo){
 				printa_rec_conex(aux, NULL, origem, custo);
 			}
 			else if(aux->conexoes == i && custo){
-				printf("\n%s (R$%.2f): ", aux->aero, aux->total);
+				printf("\n%s (R$%.2f): ", aux->aero, calculatotal(aux));
 				printa_rec_conex(aux, NULL, origem, custo);
 			}
 		}
@@ -246,7 +251,7 @@ void BFS(fila *f){
 	*/
 	conexoes++;
 	for(aresta *voo = atual->arestas; voo != NULL; voo = voo->prox){ // Checa as arestas adjacentes
-		total = atual->total + voo->preco; // Calcula o preço para o destino
+		total = /*atual->total +*/ voo->preco; // Calcula o preço para o destino
 		if(total < voo->vertice->total){ // Se o preço for menor atualiza todas as informações para caminho mais curto
 			voo->vertice->total = total;
 			voo->vertice->conexoes = conexoes;

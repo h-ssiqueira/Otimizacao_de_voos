@@ -1,4 +1,4 @@
-//Alcides Gomes Beato Neto   RA: 19060987             
+//Alcides Gomes Beato Neto   RA: 19060987
 //Henrique Sartori Siqueira  RA: 19240472
 //Rafael Silva Barbon        RA: 19243633
 #include <stdio.h>
@@ -8,7 +8,7 @@
 #include "grafo.h"
 //Biblioteca Fila, Pilha t
 
-int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando 
+int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando
     /* string args
 		0 - nome do arquivo do programa
 		1 - nome do .txt
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando
 		printf("\n%s",argv[i]);
 	*/
 
-    
+
 	vertice *grafo = novov();
 
 	cria_aeroportos(&grafo,argv[1]);
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){//Pegar os paramêtros pela linha de comando
 	}
 	else
 		printf("\tAeroporto de origem inexistente no arquivo.\n");
-	
+
     desalocag(&grafo); // Liberação de memória do grafo
     return 0;
 }
