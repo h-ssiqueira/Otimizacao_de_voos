@@ -157,6 +157,16 @@ void printateste(vertice *Grafo){
 
 
 void DFS(vertice *atual/*, pilha *caminho*/){
+	if(atual != NULL){
+		float total;
+		for(aresta *aux = atual->arestas; aux != NULL; aux = aux->prox){
+			total = atual->total + aux->preco; // Calcula o preço para o destino
+			if(total < aux->vertice->total){ // Se o preço for menor atualiza todas as informações para caminho mais curto
+				aux->vertice->total = aux->preco;
+				aux->vertice->anterior = atual;
+			}
+		}
+	}
 	if(!atual->visitado){
 		atual->visitado = true;
 		//push(atual,caminho);
@@ -171,16 +181,28 @@ void DFS(vertice *atual/*, pilha *caminho*/){
 void destinos(vertice *grafo, char partida[]){
 	//pilha *caminho = criap();
 	vertice *atual;
-	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){ // Inicializa o booleano para visitação
+	float total;
+	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){
+		aux->anterior = NULL; // Inicializa o último visitado para o algoritmo de caminho mais curto
 		if(strcmp(aux->aero,partida) == 0){
-			aux->visitado = true;
-			atual = aux;
+			aux->visitado = true; // Deixa atualizado o aeroporto de início
+			aux->total = 0; // Deixa o valor total como 0
+			atual = aux; // Atribui o atual para chamar posteriormente na função
 		}
-		else
-			aux->visitado = false;
+		else{
+			aux->visitado = false; // Inicializa o booleano para visitação
+			aux->total = FLT_MAX; // Atribui o "infinito" sendo o limite do tipo float
+		}
+		//printf("\n\t%s : %s\n",aux->aero,aux->visitado ? "true" : "false"); // Conferência de atribuição do booleano
 	}
-	for(aresta *aux = atual->arestas; aux != NULL; aux = aux->prox)
+	for(aresta *aux = atual->arestas; aux != NULL; aux = aux->prox){
+		total = atual->total + aux->preco; // Calcula o preço para o destino
+		if(total < aux->vertice->total){ // Se o preço for menor atualiza todas as informações para caminho mais curto
+			aux->vertice->total = aux->preco;
+			aux->vertice->anterior = atual;
+		}
 		DFS(aux->vertice/*,caminho*/);
+	}
 	//desalocap(caminho);
 }
 
@@ -231,7 +253,7 @@ void printconex(vertice *grafo, char *origem, bool custo){
 void BFS(fila *f){
 	vertice *atual;
 	int conexoes/*, tam*/;
-	float total;
+	//float total;
 	//char *caminhos /*= reallocarray(caminhos,4,1)*/ = (char*)malloc(f->ini->conexoes*7+4);
 	atual = removef(f,&conexoes/*,&caminhos,&tam*/);
 
@@ -251,12 +273,14 @@ void BFS(fila *f){
 	*/
 	conexoes++;
 	for(aresta *voo = atual->arestas; voo != NULL; voo = voo->prox){ // Checa as arestas adjacentes
-		total = /*atual->total +*/ voo->preco; // Calcula o preço para o destino
+		/*total = /*atual->total +*/ /*voo->preco; // Calcula o preço para o destino
 		if(total < voo->vertice->total){ // Se o preço for menor atualiza todas as informações para caminho mais curto
 			voo->vertice->total = total;
 			voo->vertice->conexoes = conexoes;
 			voo->vertice->anterior = atual;
-		}
+		}*/
+		if(voo->vertice->total == voo->preco) // Checa se há um menor número de conexões até o destino
+			voo->vertice->conexoes = conexoes;
 		if(!voo->vertice->visitado){ // Checa se já foi visitado para adicionar na fila
 			voo->vertice->visitado = true;
 			inseref(f, voo->vertice,conexoes/*,caminhos*/);
@@ -271,19 +295,14 @@ void BFS(fila *f){
 void conexoes(vertice *grafo, char partida[]){
 	vertice *atual;
 	fila *f = criaf();
-	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){
-		aux->anterior = NULL; // Inicializa o último visitado para o algoritmo de caminho mais curto
+	for(vertice *aux = grafo; aux != NULL; aux = aux->prox){ // Inicializa o booleano para visitação
 		aux->conexoes = 0;
 		if(strcmp(aux->aero,partida) == 0){
-			aux->visitado = true; // Deixa atualizado o aeroporto de início
-			aux->total = 0; // Deixa o valor total como 0
-			atual = aux; // Atribui o atual para chamar posteriormente na função
+			aux->visitado = true;
+			atual = aux;
 		}
-		else{
-			aux->visitado = false; // Inicializa o booleano para visitação
-			aux->total = FLT_MAX; // Atribui o "infinito" sendo o limite do tipo float
-		}
-		//printf("\n\t%s : %s\n",aux->aero,aux->visitado ? "true" : "false"); // Conferência de atribuição do booleano
+		else
+			aux->visitado = false;
 	}
 	inseref(f,atual,0/*,partida*/);
 	while(!vaziaf(f))
